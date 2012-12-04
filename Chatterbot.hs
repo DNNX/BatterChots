@@ -37,10 +37,10 @@ stateOfMind brain = do
 	return (rulesApply (map (map2 (id,pick r)) brain) :: Phrase -> Phrase)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs phrase = try (transformationsApply "*" reflect pairs) phrase
+rulesApply pairs = try (transformationsApply "*" reflect pairs)
 
 reflect :: Phrase -> Phrase
-reflect phrase = [try (flip lookup reflections) word | word <- phrase]
+reflect = map (try (flip lookup reflections))
 
 reflections =
   [ ("am",     "are"),
@@ -74,10 +74,7 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|")
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile brainList = map toWords brainList
-	where
-	toWords (input, outputs) = (words (map toLower input), map words outputs)
-
+rulesCompile brainList = [map2 (words . (map toLower), map words) (fst brainEntry, snd brainEntry) | brainEntry <- brainList]
 
 --------------------------------------
 
@@ -101,7 +98,7 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-reductionsApply pairs mPhrase = fix (tryReduction pairs) mPhrase
+reductionsApply = fix . tryReduction
   where
     tryReduction :: [PhrasePair] -> Phrase -> Phrase
     tryReduction [] phrase = phrase
