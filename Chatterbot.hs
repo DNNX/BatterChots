@@ -37,9 +37,7 @@ stateOfMind brain = do
 	return (rulesApply (map (map2 (id,pick r)) brain) :: Phrase -> Phrase)
 
 rulesApply :: [PhrasePair] -> Phrase -> Phrase
-rulesApply pairs phrase
-      | transformationsApply "*" reflect pairs phrase == Nothing = phrase
-      | otherwise = removeMaybe (transformationsApply "*" reflect pairs phrase) 
+rulesApply pairs phrase = try (transformationsApply "*" reflect pairs) phrase
 
 reflect :: Phrase -> Phrase
 reflect phrase = map (reflectAux 0) phrase
