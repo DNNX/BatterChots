@@ -3,6 +3,7 @@ import Utilities
 import Pattern
 import System.Random
 import Data.Char
+import Data.Maybe
 
 
 
@@ -108,15 +109,11 @@ reduce :: Phrase -> Phrase
 reduce = reductionsApply reductions
 
 reductionsApply :: [PhrasePair] -> Phrase -> Phrase
-reductionsApply pairs mPhrase = tryApplyReduction pairs mPhrase 0
-	
-tryApplyReduction :: [PhrasePair] -> Phrase -> Int -> Phrase
-tryApplyReduction pairs mPhrase index
-	| index >= (length pairs) = mPhrase
-	| reductionApply (pairs !! index) mPhrase == Nothing = tryApplyReduction pairs mPhrase (index+1)
-	| otherwise = tryApplyReduction pairs (removeMaybe (reductionApply (pairs !! index) mPhrase)) 0
+reductionsApply pairs mPhrase = fix (tryReduction pairs) mPhrase
+  where
+    tryReduction :: [PhrasePair] -> Phrase -> Phrase
+    tryReduction [] phrase = phrase
+    tryReduction (p:ps) phrase = fix (tryReduction ps) (try (reductionApply p) phrase)
 
 reductionApply :: PhrasePair -> Phrase -> Maybe Phrase
-reductionApply (pPhrase, sPhrase) mPhrase
-	| match "*" pPhrase mPhrase == Nothing = Nothing
-	| otherwise = ( Just . (substitute "*" sPhrase) . removeMaybe ) (match "*" pPhrase mPhrase)
+reductionApply (pPhrase, sPhrase) mPhrase = mmap (substitute "*" sPhrase) (match "*" pPhrase mPhrase)
