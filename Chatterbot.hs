@@ -40,13 +40,7 @@ rulesApply :: [PhrasePair] -> Phrase -> Phrase
 rulesApply pairs phrase = try (transformationsApply "*" reflect pairs) phrase
 
 reflect :: Phrase -> Phrase
-reflect phrase = map (reflectAux 0) phrase
-	where
-	reflectAux :: Int -> String -> String
-	reflectAux index word
-		| index >= length reflections = word
-		| word == fst (reflections !! index) = snd (reflections !! index)
-		| otherwise = reflectAux (index+1) word
+reflect phrase = [try (flip lookup reflections) word | word <- phrase]
 
 reflections =
   [ ("am",     "are"),
