@@ -5,8 +5,6 @@ import System.Random
 import Data.Char
 import Data.Maybe
 
-
-
 chatterbot :: String -> [(String, [String])] -> IO ()
 chatterbot botName botRules = do
     putStrLn ("\n\nHi! I am " ++ botName ++ ". How are you?")
@@ -74,7 +72,7 @@ prepare :: String -> Phrase
 prepare = reduce . words . map toLower . filter (not . flip elem ".,:;*!#%&|")
 
 rulesCompile :: [(String, [String])] -> BotBrain
-rulesCompile brainList = [map2 (words . (map toLower), map words) (fst brainEntry, snd brainEntry) | brainEntry <- brainList]
+rulesCompile = map $ map2 (words . map toLower, map words)
 
 --------------------------------------
 
