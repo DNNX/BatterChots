@@ -13,7 +13,7 @@ orElse Nothing  x  = x
 orElse (Just a) _  = Just a
 
 try :: (a -> Maybe a) -> a -> a
-try f x = maybe x id (f x)
+try f x = fromMaybe x (f x)
 
 fix :: Eq a => (a -> a) -> a -> a
 fix f x
